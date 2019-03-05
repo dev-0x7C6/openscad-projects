@@ -58,17 +58,29 @@ module make_vesa_holes(size, hole_size) {
 bluetooth_w = 38;
 bluetooth_h = 16.5;
 
-difference(){
-    translate([-size/2, -size/2, 0])
-        cube([size, size, height]);
-    
-    translate([-bluetooth_w/2, -bluetooth_h/2, 1])
-    cube([bluetooth_w, bluetooth_h, height]);
-    
-    make_vesa_holes(100, hole_size);
-    make_vesa_holes(75, hole_size);
-    make_vesa_holes(50, hole_size);
+module vesa_base() {
+    difference(){
+        translate([-bluetooth_w/2, -bluetooth_h/2, 1])
+            cube([bluetooth_w, bluetooth_h, height]);
+        for (distance = [50, 75, 100])
+            make_vesa_holes(distance, hole_size);
+    }
 }
+
+
+module avr_nano_pcb_adapter() {
+    translate([0.00, 2.00, 0.00])
+        cube([43.60, 14.30, 3.60]);
+    translate([0, 0, 3.60])
+        cube([43.60, 18.30, 6.50]);
+}
+
+difference() {
+    cube([46, 22, 6]);
+        translate([0,2.00,0.6])
+            avr_nano_pcb_adapter();
+}
+
 
 /*
 corner(40);
