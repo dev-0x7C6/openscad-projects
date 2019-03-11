@@ -35,23 +35,25 @@ module corner(size) {
 
 $fn=16;
 
-default_vesa_distances = [50, 75, 100];
+default_vesa_distances = [75, 100];
 
 size=150;
 height=5;
 hole_size =5;
 vesa_type=20;
 
-module make_vesa_holes(size, h, hole_size) {
+module make_vesa_holes(size, h, hole_size, center = true) {
+    half=size/2;
+    hole_half = hole_size/2;
+
+    module hole() {
+        cylinder(h, r1=hole_half, r2=hole_half);
+    }
+
     union() {
-        translate([-size/2, -size/2, 0])
-            cylinder(h, r1=hole_size/2, r2=hole_size/2);
-        translate([-size/2, size/2, 0])
-            cylinder(h, r1=hole_size/2, r2=hole_size/2);
-        translate([size/2, -size/2, 0])
-            cylinder(h, r1=hole_size/2, r2=hole_size/2);
-        translate([size/2, size/2, 0])
-            cylinder(h, r1=hole_size/2, r2=hole_size/2);
+        for (pos = [[-half, -half, 0], [-half, half, 0], [half, -half, 0], [half, half, 0]])
+            translate(pos)
+                hole();
     }
 }
 
@@ -59,19 +61,21 @@ module make_vesa_holes(size, h, hole_size) {
 bluetooth_w = 38;
 bluetooth_h = 16.5;
 
-module vesa_base(size = 150, h = 5, distances = default_vesa_distances) {
-    difference(){
-        cube([size, size, h]);
-        translate([size/2, size/2, 0])
-            for (distance = distances)
-                make_vesa_holes(distance, h, hole_size);
-    }
+module vesa_base(size = 150, h = 5, distances = default_vesa_distances, center = true) {
+    half = size/2;
+    translate(center ? [-half, -half, 0] : [0, 0, 0])
+        difference(){
+            cube([size, size, h]);
+            translate([half, half, 0])
+                for (distance = distances)
+                    make_vesa_holes(distance, h, hole_size);
+        }
 }
 
-module bluetooth_hc06_adapter(h = 5) {
+module bluetooth_hc06_adapter(h = 5, center = true) {
     bluetooth_l = 38.20;
     bluetooth_w = 16.80;
-    bluetooth_h = max(4.60, 5);
+    bluetooth_h = max(4.60, h);
 
     translate(center ? [0, 0, 0] : [bluetooth_l/2, bluetooth_w/2, bluetooth_h/2])
         cube([bluetooth_l, bluetooth_w, bluetooth_h], center = true);
@@ -136,13 +140,29 @@ module test_hc06() {
     }
 }
 
-translate([0, -170, 0])
-vesa_base();
+module render_tests() {
+    translate([0, -170, 0])
+    vesa_base();
 
-test_hc06();
+    test_hc06();
 
-translate([0, 40, 0])
-    test_avr();
+    translate([0, 40, 0])
+        test_avr();
+}
+
+height = 9;
+size = 120;
+
+difference() {
+    vesa_base(h = height, size = size);
+
+    translate([-size/2 + 38, 20, height /2 + 0.4])
+        bluetooth_hc06_adapter(h = height, center=true);
+
+    translate([-size/2 + 45.20/2 , 0, height /2 + 0.4])
+        avr_nano_pcb_adapter(height, center = true);
+}
+
 
 /*
 corner(40);
