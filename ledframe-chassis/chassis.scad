@@ -1,4 +1,8 @@
 
+
+
+
+
 module corner(size) {
     hole_h = 1;
     hole_w = 4;
@@ -38,7 +42,6 @@ $fn=16;
 default_vesa_distances = [75, 100];
 
 size=150;
-height=5;
 hole_size =5;
 vesa_type=20;
 
@@ -57,10 +60,6 @@ module make_vesa_holes(size, h, hole_size, center = true) {
     }
 }
 
-
-bluetooth_w = 38;
-bluetooth_h = 16.5;
-
 module vesa_base(size = 150, h = 5, distances = default_vesa_distances, center = true) {
     half = size/2;
     translate(center ? [-half, -half, 0] : [0, 0, 0])
@@ -72,19 +71,30 @@ module vesa_base(size = 150, h = 5, distances = default_vesa_distances, center =
         }
 }
 
-module bluetooth_hc06_adapter(h = 5, center = true) {
-    bluetooth_l = 38.20;
-    bluetooth_w = 16.80;
-    bluetooth_h = max(4.60, h);
 
-    translate(center ? [0, 0, 0] : [bluetooth_l/2, bluetooth_w/2, bluetooth_h/2])
-        cube([bluetooth_l, bluetooth_w, bluetooth_h], center = true);
+// default hc06 bluetooth size 
+bluetooth_lenght = 38.20;
+bluetooth_width = 16.80;
+bluetooth_height_minimal = 4.60;
+
+// default arduino nano size
+arduino_lenght = 45.30;
+arduino_width = 18.30;
+arduino_height_minimal = 7.80;
+
+module bluetooth_hc06_adapter(h = 5, center = true) {
+    l = bluetooth_lenght;
+    w = bluetooth_width;
+    h_ = max(bluetooth_height_minimal, h);
+
+    translate(center ? [0, 0, 0] : [l/2, w/2, h_/2])
+        cube([l, w, h_], center = true);
 }
 
 module avr_nano_pcb_adapter(h = 8.00, center = false) {
-    board_l = 45.30;
-    board_w = 18.30;
-    board_h = max(h, 7.80);
+    board_l = arduino_lenght;
+    board_w = arduino_width;
+    board_h = max(h, arduino_height_minimal);
 
     pin_rail_w = 2.00;
     pin_rail_h = 2.00;
@@ -153,13 +163,17 @@ module render_tests() {
 height = 9;
 size = 120;
 
+
 difference() {
     vesa_base(h = height, size = size);
+    
+    translate([0, 0, height/2 + 4.0])
+        cube([30, 57, height], center = true);
 
-    translate([-size/2 + 38, 20, height /2 + 0.4])
+    translate([-size/2 + bluetooth_lenght/2 + (arduino_lenght - bluetooth_lenght), 20, height /2 + 0.4])
         bluetooth_hc06_adapter(h = height, center=true);
 
-    translate([-size/2 + 45.20/2 , 0, height /2 + 0.4])
+    translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
         avr_nano_pcb_adapter(height, center = true);
 }
 
