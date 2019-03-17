@@ -1,7 +1,27 @@
+module m3_allen_screw(center = false) {
+    tolerance = 0.4;
+    head_w = 5.3 + tolerance;
+    head_h = 3.0 + tolerance;
+    width = 3.0 + tolerance;
+    height = 20.0 + tolerance;
 
+    translate(center ? [0, 0, 0] : [head_w/2, head_w/2, 0]);
+        union() {
+            color("red")
+                cylinder(head_h, r1=head_w/2, r2=head_w/2, $fn = 32);
+            translate([0, 0, head_h])
+                color("orange")
+                    cylinder(height, r1=width/2, r2=width/2, $fn = 32);
+        }
+}
 
-
-
+module m3_allen_screw_test(center = false) {
+    difference() {
+        translate([-5, -5, 0])
+            cube(10, 10, 10);
+        m3_allen_screw();
+    }
+}
 
 module corner(size) {
     hole_h = 1;
@@ -176,6 +196,7 @@ difference() {
     translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
         avr_nano_pcb_adapter(height, center = true);
 }
+
 
 
 /*
