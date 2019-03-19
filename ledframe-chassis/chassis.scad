@@ -88,7 +88,7 @@ module corner(size) {
     }
 }
 
-$fn=16;
+$fn=32;
 
 default_vesa_distances = [75, 100];
 
@@ -205,6 +205,32 @@ module render_tests() {
 height = 10.0;
 size = 120;
 
+//test
+module simple_gear(r = 13, segments = 40) {
+    difference () {
+        linear_extrude(height=4)
+        union() {
+            for (i = [0:segments]) {
+                rotate(a=i*360.0/segments, v=[0,0,1])
+                    translate([0, r, 0])
+                        polygon([[-1.5, 0], [-0.3, 2], [0.3, 2], [1.5,0]]);
+                circle(r + 0.5);
+            }
+        }
+        
+        difference() {
+            linear_extrude(height=4)
+            difference() {
+                circle(r - 1, h=4);
+                circle(r - 6.5, h=4);
+            }
+            translate([0, 0, 2])
+                cube([40, 7, 4], center=true);
+        }
+    }
+}
+
+
 difference() {
     vesa_base(h = height, size = size);
 
@@ -224,6 +250,10 @@ difference() {
     translate([0, -size/2, 5])
         rotate([0, 90, 90])
             ws2812_plug(22);
+
+    grid(2,2, 87.5, 87.5)
+        translate([0, 0, 6])
+            simple_gear(segments = 24);
 
     grid(2,2, 87.5, 87.5)
         m3_allen_screw();
