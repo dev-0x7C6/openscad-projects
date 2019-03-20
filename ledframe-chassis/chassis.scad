@@ -206,18 +206,21 @@ height = 10.0;
 size = 120;
 
 //test
-module simple_gear(r = 13, segments = 40) {
-    difference () {
-        linear_extrude(height=4)
-        union() {
-            for (i = [0:segments]) {
-                rotate(a=i*360.0/segments, v=[0,0,1])
-                    translate([0, r, 0])
-                        polygon([[-1.5, 0], [-0.3, 2], [0.3, 2], [1.5,0]]);
-                circle(r + 0.5);
-            }
+module simple_gear(r = 13, segments = 40, h = 4) {
+    linear_extrude(height=h)
+    union() {
+        for (i = [0:segments]) {
+            rotate(a=i*360.0/segments, v=[0,0,1])
+                translate([0, r, 0])
+                    polygon([[-1.5, 0], [-0.3, 2], [0.3, 2], [1.5,0]]);
+            circle(r + 0.5);
         }
-        
+    }
+}
+
+module ledframe_gear(r = 13, segments = 24) {
+    difference() {
+        simple_gear(segments = segments);
         difference() {
             linear_extrude(height=4)
             difference() {
@@ -225,12 +228,12 @@ module simple_gear(r = 13, segments = 40) {
                 circle(r - 6.5, h=4);
             }
             translate([0, 0, 2])
-                cube([40, 7, 4], center=true);
+                cube([40, 10, 4], center=true);
         }
     }
 }
 
-
+/*
 difference() {
     vesa_base(h = height, size = size);
 
@@ -261,15 +264,28 @@ difference() {
     grid(2,2, 20, 65)
         m3_allen_screw();
 }
+*/ 
+module gear_adapter_test() {
+    difference() {
+        translate([0, 0, 2])
+            cube([28, 28, 4], center =true);
+        
+        translate([-18, -18, 2])
+            cube([25, 25, 2]);
+        
+        translate([0, 0, 2])
+            simple_gear(r = 10, segments = 24);
+    }
+}
 
+module gear_with_stick_test() {
+    union() {
+        simple_gear(r = 10, segments = 24, h = 2);
+        translate([-5, 0, 0])
+        cube([10, 30, 2]);
+    }
+}
 
-/*
-corner(40);
-translate([50, -50, 0])
-rotate([0, 0, -45])
-    cube([100, 20, 2], center=true);
+gear_with_stick_test();
 
-translate([50, -50, 0])
-corner(40);
-
-*/
+//ledframe_gear(segments=24);
