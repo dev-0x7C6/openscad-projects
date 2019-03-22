@@ -218,53 +218,74 @@ module simple_gear(r = 13, segments = 40, h = 4) {
     }
 }
 
+$fn =32;
+
+module ring2d(r = 3, size = 1) {
+  difference () {
+    circle(r = r);
+    circle(r = r - (size / 2));
+  }
+}
+
+module ring2d_cuted(r, size, diff = 2) {
+  difference () {
+    ring2d(r = r, size = size);
+    square([r * 2, diff], center = true);
+  }
+}
+
+module ring3d(r = 3, size = 1, height = 1) {
+  linear_extrude(height)
+    ring2d(r = r, size = size);
+}
+
+module ring3d_cuted(r = 3, size = 1, height = 1, diff = 2) {
+  linear_extrude(height)
+    ring2d_cuted(r = r, size = size, diff = diff);
+}
+
 module ledframe_gear(r = 13, segments = 24) {
     difference() {
         simple_gear(segments = segments);
-        difference() {
-            linear_extrude(height=4)
-            difference() {
-                circle(r - 1, h=4);
-                circle(r - 6.5, h=4);
-            }
-            translate([0, 0, 2])
-                cube([40, 10, 4], center=true);
-        }
+        ring3d_cuted(r = r - 1, size = 12, height = 4, diff = 6);
     }
 }
 
-/*
-difference() {
-    vesa_base(h = height, size = size);
+module ledframe_chassis() {
+    difference() {
+        vesa_base(h = height, size = size);
 
-    translate([0, 0, height/2 + 4.0])
-        cube([30, 57, height], center = true);
+        translate([0, 0, height/2 + 4.0])
+            cube([30, 57, height], center = true);
 
-    translate([-size/2 + bluetooth_lenght/2 + (arduino_lenght - bluetooth_lenght), 20, height /2 + 0.4])
-        bluetooth_hc06_adapter(h = height, center=true);
+        translate([-size/2 + bluetooth_lenght/2 + (arduino_lenght - bluetooth_lenght), 20, height /2 + 0.4])
+            bluetooth_hc06_adapter(h = height, center=true);
 
-    translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
-        avr_nano_pcb_adapter(height, center = true);
+        translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
+            avr_nano_pcb_adapter(height, center = true);
 
-    translate([-size/2, -20, 5])
-        rotate([90, 0, 90])
-            power_plug(55);
+        translate([-size/2, -20, 5])
+            rotate([90, 0, 90])
+                power_plug(55);
 
-    translate([0, -size/2, 5])
-        rotate([0, 90, 90])
-            ws2812_plug(22);
+        translate([0, -size/2, 5])
+            rotate([0, 90, 90])
+                ws2812_plug(22);
 
-    grid(2,2, 87.5, 87.5)
-        translate([0, 0, 6])
-            simple_gear(segments = 24);
+        grid(2,2, 87.5, 87.5)
+            translate([0, 0, 6])
+                ledframe_gear(segments = 24);
 
-    grid(2,2, 87.5, 87.5)
-        m3_allen_screw();
+        grid(2,2, 87.5, 87.5)
+            m3_allen_screw();
 
-    grid(2,2, 20, 65)
-        m3_allen_screw();
+        grid(2,2, 20, 65)
+            m3_allen_screw();
+    }
 }
-*/ 
+
+ledframe_chassis();
+
 module gear_adapter_test() {
     difference() {
         translate([0, 0, 2])
@@ -286,6 +307,6 @@ module gear_with_stick_test() {
     }
 }
 
-gear_with_stick_test();
+
 
 //ledframe_gear(segments=24);
