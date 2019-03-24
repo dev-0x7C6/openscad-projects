@@ -1,3 +1,5 @@
+$fn=32;
+
 module m3_allen_screw(center = true) {
     tolerance = 0.4;
     head_w = 5.3 + tolerance;
@@ -8,12 +10,22 @@ module m3_allen_screw(center = true) {
     translate(center ? [head_w/2, head_w/2, 0] : [0, 0, 0]);
         union() {
             color("red")
-                cylinder(head_h, r1=head_w/2, r2=head_w/2, $fn = 32);
+                cylinder(head_h, r1=head_w/2, r2=head_w/2);
             translate([0, 0, head_h])
                 color("orange")
-                    cylinder(height, r1=width/2, r2=width/2, $fn = 32);
+                    cylinder(height, r1=width/2, r2=width/2);
         }
 }
+
+module m3_allen_screw_top(tolerance = 0.4) {
+    linear_extrude(height = 0.4) 
+        circle(r = 1.5 + (tolerance / 2), $fn = 32);
+    
+    translate([0, 0, 0.4])
+        linear_extrude(height = 20) 
+            circle(r = 2.7 + (tolerance / 2), $fn = 6); 
+}
+
 
 module m3_allen_screw_test() {
     difference() {
@@ -24,9 +36,9 @@ module m3_allen_screw_test() {
 }
 
 module power_plug(extended) {
-    cylinder(4, r1 = 5.0, r2= 5.0, $fn = 32);
+    cylinder(4, r1 = 5.0, r2 = 5.0);
     translate([0, 0, 4])
-        cylinder(16 + extended, r1 = 7.8/2, r2= 7.8/2, $fn = 32);
+        cylinder(16 + extended, r1 = 7.8/2, r2= 7.8/2);
 }
 
 module ws2812_plug(extended) {
@@ -87,8 +99,6 @@ module corner(size) {
             block(false);
     }
 }
-
-$fn=32;
 
 default_vesa_distances = [75, 100];
 
@@ -202,7 +212,7 @@ module render_tests() {
         test_avr();
 }
 
-height = 10.0;
+height = 12.0;
 size = 120;
 
 //test
@@ -217,8 +227,6 @@ module simple_gear(r = 13, segments = 40, h = 4) {
         }
     }
 }
-
-$fn =32;
 
 module ring2d(r = 3, size = 1) {
   difference () {
@@ -244,10 +252,16 @@ module ring3d_cuted(r = 3, size = 1, height = 1, diff = 2) {
     ring2d_cuted(r = r, size = size, diff = diff);
 }
 
-module ledframe_gear(r = 13, segments = 24) {
+module ledframe_gear(r = 13, segments = 48, height = 6) {
     difference() {
-        simple_gear(segments = segments);
-        ring3d_cuted(r = r - 1, size = 12, height = 4, diff = 6);
+        simple_gear(segments = segments, h = height);
+    }
+}
+
+module ledframe_gear_cutted(r = 13, segments = 48, height = 6) {
+    difference() {
+        simple_gear(segments = segments, h = height);
+        ring3d_cuted(r = r - 1, size = 12, height = height, diff = 6);
     }
 }
 
@@ -258,15 +272,17 @@ module ledframe_chassis() {
         translate([0, 0, height/2 + 4.0])
             cube([30, 57, height], center = true);
 
-        translate([-size/2 + bluetooth_lenght/2 + (arduino_lenght - bluetooth_lenght), 20, height /2 + 0.4])
-            bluetooth_hc06_adapter(h = height, center=true);
+        translate([0, -5, 0]) {
+            translate([-size/2 + bluetooth_lenght/2 + (arduino_lenght - bluetooth_lenght), 20, height /2 + 0.4])
+                bluetooth_hc06_adapter(h = height, center=true);
 
-        translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
-            avr_nano_pcb_adapter(height, center = true);
+            translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
+                avr_nano_pcb_adapter(height, center = true);
 
-        translate([-size/2, -20, 5])
-            rotate([90, 0, 90])
-                power_plug(55);
+            translate([-size/2, -20, 5])
+                rotate([90, 0, 90])
+                    power_plug(55);
+        }
 
         translate([0, -size/2, 5])
             rotate([0, 90, 90])
@@ -274,7 +290,12 @@ module ledframe_chassis() {
 
         grid(2,2, 87.5, 87.5)
             translate([0, 0, 6])
-                ledframe_gear(segments = 24);
+                ledframe_gear(h = 6);
+        
+        grid(2, 2, size, size)
+            translate([0, 0, 6])
+                linear_extrude(height= 6)
+                    square([40, 40], center = true);
 
         grid(2,2, 87.5, 87.5)
             m3_allen_screw();
@@ -284,7 +305,21 @@ module ledframe_chassis() {
     }
 }
 
-ledframe_chassis();
+module ledframe_chassis_top() {
+    difference() {
+        vesa_base(h = 3, size = size);
+
+        grid(2,2, 87.5, 87.5)
+            m3_allen_screw_top();
+
+        grid(2,2, 20, 65)
+            m3_allen_screw_top();
+    }
+}
+
+
+
+ledframe_chassis_top();
 
 module gear_adapter_test() {
     difference() {
