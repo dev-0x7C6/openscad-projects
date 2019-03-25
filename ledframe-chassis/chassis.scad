@@ -23,7 +23,7 @@ module m3_allen_screw_top(tolerance = 0.4) {
     
     translate([0, 0, 0.4])
         linear_extrude(height = 20) 
-            circle(r = 2.7 + (tolerance / 2), $fn = 6); 
+            circle(r = 3.0 + (tolerance / 2), $fn = 6);
 }
 
 
@@ -36,9 +36,8 @@ module m3_allen_screw_test() {
 }
 
 module power_plug(extended) {
-    cylinder(4, r1 = 5.0, r2 = 5.0);
-    translate([0, 0, 4])
-        cylinder(16 + extended, r1 = 7.8/2, r2= 7.8/2);
+    linear_extrude(height = 20 + extended)
+        circle(r = 5.5);
 }
 
 module ws2812_plug(extended) {
@@ -62,9 +61,6 @@ module grid(x, y, width, height, center = true)
             }
         }
 }
-
-//grid(5,5, 40, 40)
-//m3_allen_screw();
 
 module corner(size) {
     hole_h = 1;
@@ -212,7 +208,7 @@ module render_tests() {
         test_avr();
 }
 
-height = 12.0;
+height = 11.0;
 size = 120;
 
 //test
@@ -228,10 +224,10 @@ module simple_gear(r = 13, segments = 40, h = 4) {
     }
 }
 
-module ring2d(r = 3, size = 1) {
+module ring2d(w = 6, w2 = 4) {
   difference () {
-    circle(r = r);
-    circle(r = r - (size / 2));
+    circle(r = w / 2);
+    circle(r = w2 / 2);
   }
 }
 
@@ -242,9 +238,9 @@ module ring2d_cuted(r, size, diff = 2) {
   }
 }
 
-module ring3d(r = 3, size = 1, height = 1) {
+module ring3d(w, w2, height = 1) {
   linear_extrude(height)
-    ring2d(r = r, size = size);
+    ring2d(w, w2);
 }
 
 module ring3d_cuted(r = 3, size = 1, height = 1, diff = 2) {
@@ -270,7 +266,7 @@ module ledframe_chassis() {
         vesa_base(h = height, size = size);
 
         translate([0, 0, height/2 + 4.0])
-            cube([30, 57, height], center = true);
+            cube([30, 54, height], center = true);
 
         translate([0, -5, 0]) {
             translate([-size/2 + bluetooth_lenght/2 + (arduino_lenght - bluetooth_lenght), 20, height /2 + 0.4])
@@ -279,7 +275,7 @@ module ledframe_chassis() {
             translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
                 avr_nano_pcb_adapter(height, center = true);
 
-            translate([-size/2, -20, 5])
+            translate([-size/2, -18, 5.6])
                 rotate([90, 0, 90])
                     power_plug(55);
         }
@@ -288,16 +284,27 @@ module ledframe_chassis() {
             rotate([0, 90, 90])
                 ws2812_plug(22);
 
-        grid(2,2, 87.5, 87.5)
-            translate([0, 0, 6])
-                ledframe_gear(h = 6);
-        
-        grid(2, 2, size, size)
-            translate([0, 0, 6])
-                linear_extrude(height= 6)
-                    square([40, 40], center = true);
+        translate([-50, -50, 6])
+            linear_extrude(height= 6)
+                rotate([0, 0, 45])
+                    square([45, 14], center = true);
 
-        grid(2,2, 87.5, 87.5)
+        translate([50, 50, 6])
+            linear_extrude(height= 6)
+                rotate([0, 0, 45])
+                    square([45, 14], center = true);
+
+        translate([50, -50, 6])
+            linear_extrude(height= 6)
+                rotate([0, 0, -45])
+                    square([45, 14], center = true);
+
+        translate([-50, 50, 6])
+            linear_extrude(height= 6)
+                rotate([0, 0, -45])
+                    square([45, 14], center = true);
+
+        grid(2, 2, 87.5, 87.5)
             m3_allen_screw();
 
         grid(2,2, 20, 65)
@@ -318,8 +325,22 @@ module ledframe_chassis_top() {
 }
 
 
+ledframe_chassis();
 
-ledframe_chassis_top();
+translate([size + 20, 0, 0])
+    ledframe_chassis_top();
+
+
+/*
+difference() {
+    linear_extrude(height = 10)
+        square([14, 14], center = true);
+    linear_extrude(height = 10)
+        circle(r = 5.5);
+}
+*/
+
+
 
 module gear_adapter_test() {
     difference() {
