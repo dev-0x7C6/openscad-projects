@@ -17,6 +17,11 @@ module m3_allen_screw(center = true) {
         }
 }
 
+module m3_allen_screw_rod(height = 10, tolerance = 0.4) {
+    linear_extrude(height = height)
+        circle(r = 1.5 + (tolerance / 2), $fn = 32);
+}
+
 module m3_allen_screw_top(tolerance = 0.4) {
     linear_extrude(height = 0.4) 
         circle(r = 1.5 + (tolerance / 2), $fn = 32);
@@ -104,7 +109,8 @@ vesa_type=20;
 
 module make_vesa_holes(size, h, hole_size, center = true) {
     grid(2, 2, size, size)
-        cylinder(h, r1=hole_size/2, r2=hole_size/2);
+        linear_extrude(height = h)
+            circle(r = hole_size / 2);
 }
 
 module vesa_base(size = 150, h = 5, distances = default_vesa_distances) {
@@ -324,23 +330,41 @@ module ledframe_chassis_top() {
     }
 }
 
+module ledframe_arm() {
+    angle=20;
+    linear_extrude(1)
+        difference() {
+            union() {
+                translate([30/2 + (tan(angle) * 13.80), -13.80/2, 0])
+                rotate([0, 0, angle])
+                    square([260, 13.80]);
+
+                translate([15, -13.80 / 2, 0])
+                    polygon([[0,0], [tan(angle) * 13.80, 0], [0, 13.80]]);
+
+                square([30, 13.80], center = true);
+            }
+
+            translate([-2, 0, 0])
+                union() {
+                    circle(r = 1.7);
+
+                    translate([8.5, 0, 0])
+                            circle(r = hole_size / 2);
+
+                    translate([-8.5, 0, 0])
+                            circle(r = hole_size / 2);
+                }
+        }
+}
+
+translate([0, size + 20, 0])
+    ledframe_arm();
 
 ledframe_chassis();
 
 translate([size + 20, 0, 0])
-    ledframe_chassis_top();
-
-
-/*
-difference() {
-    linear_extrude(height = 10)
-        square([14, 14], center = true);
-    linear_extrude(height = 10)
-        circle(r = 5.5);
-}
-*/
-
-
+  ledframe_chassis_top();
 
 module gear_adapter_test() {
     difference() {
