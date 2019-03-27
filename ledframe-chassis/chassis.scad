@@ -45,12 +45,13 @@ module power_plug(extended) {
         circle(r = 5.5);
 }
 
-module ws2812_plug(extended) {
-    translate([0, 0, 4.00])
-        cube([7.50, 10.50, 8.00], center = true);
-    translate([0, 0, 8.00])
-        translate([0, 0, 11.00 / 2 + extended / 2])
-            cube([5.50, 8.00, 11.00 + extended], center = true);
+module ws2812_plug(extended = 0, extended_base = 0) {
+    linear_extrude(height = 8 + extended_base)
+        square([7.2, 10.40], center = true);
+
+    translate([0, 0, 8 + extended_base])
+        linear_extrude(height = 11 + extended)
+            square([5.40, 8.00], center = true);
 }
 
 module grid(x, y, width, height, center = true)
@@ -256,17 +257,17 @@ module ledframe_chassis(height = height) {
                     power_plug(55);
         }
 
-        translate([0, -size/2, 5])
-            rotate([0, 90, 90])
-                ws2812_plug(22);
+        translate([-size/2.5, -size/2 - 8, 6.5])
+            rotate([0, 90, 45])
+                ws2812_plug(30, 16);
 
-        translate([0, 0, height - 6])
-            ledframe_arm_socket_grid(100, height = 6);
+        translate([0, 0, height - 5])
+            ledframe_arm_socket_grid(100, height = 5);
 
         grid(2, 2, 87.5, 87.5)
             m3_allen_screw();
 
-        grid(2,2, 20, 65)
+        grid(2, 2, 20, 65)
             m3_allen_screw();
     }
 }
@@ -293,13 +294,21 @@ module ledframe_chassis_enclosure(height = 4) {
     }
 }
 
-module ledframe_arm(height = 4, height_mount = 6, arm_width = 13.80, arm_length = 260.00, angle = 20.0) {
+module ledframe_arm(height = 5, height_mount = 5, arm_width = 13.80, arm_length = 260.00, angle = 25.0) {
     difference() {
         union() {
-            linear_extrude(height)
-                translate([30/2 + (tan(angle) * arm_width) - 1.0, -arm_width / 2, 0])
-                    rotate([0, 0, angle])
-                        square([arm_length, arm_width]);
+            translate([30/2 + (tan(angle) * arm_width) - 1.0, -arm_width / 2, 0])
+                rotate([0, 0, angle])
+                    difference() {
+                        linear_extrude(height)
+                            square([arm_length, arm_width]);
+                        translate([arm_length - 8, arm_width/2, 0])
+                            ledframe_m3_screw_adapter(height, base_height = 1.6);
+                        translate([arm_length/2, arm_width/2 - 0.75, 0])
+                            grid(6, 2, arm_length * 0.8, arm_width * 0.6)
+                                linear_extrude(height)
+                                    square([2.75, 1.5]);
+                    }
 
             linear_extrude(height_mount)
                 union() {
@@ -323,6 +332,10 @@ module ledframe_arm(height = 4, height_mount = 6, arm_width = 13.80, arm_length 
     }
 }
 
+
+
+
+
 translate([0, size + 20, 0])
     ledframe_arm();
 
@@ -330,4 +343,3 @@ ledframe_chassis();
 
 translate([size + 20, 0, 0])
   ledframe_chassis_enclosure();
-
