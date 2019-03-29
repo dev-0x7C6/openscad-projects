@@ -333,13 +333,36 @@ module ledframe_arm(height = 5, height_mount = 5, arm_width = 13.80, arm_length 
 }
 
 
-
-
-
 translate([0, size + 20, 0])
     ledframe_arm();
 
 ledframe_chassis();
 
 translate([size + 20, 0, 0])
-  ledframe_chassis_enclosure();
+    ledframe_chassis_enclosure();
+
+/*
+difference() {
+    linear_extrude(height = height)
+        square([60.00, 30.00], center = true);
+
+    grid(3, 2, 60, 30)
+        m3_allen_screw();
+}
+*/
+
+translate([-size - 20, 0, 0])
+union() {
+
+    difference() {
+        linear_extrude(height = height)
+            square([30.00, 30.00], center = true);
+
+        m3_allen_screw();
+
+        translate([0, 0, 5])
+            linear_extrude(height = height - 5)
+                rotate([0, 0, 70])
+                    square([14.00, 100.00], center = true);
+    }
+}
