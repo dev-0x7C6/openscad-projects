@@ -31,13 +31,10 @@ _extraPadding = 6;
 // Rounded corners
 _rounded = 1;//[1:Yes,0:No]
 
-// Determines if hole goes compeltely through the base
-_holeThrough = 1;	//[1:Yes,0:No]	
-
 // Make slot to add flex to the walls
 _slotted = 1;//[1:Yes,0:No]
 
-// mm, defines bit zise ( 6.35 is 1/4" )
+// mm, defines bit size ( 6.35 is 1/4" )
 _bitSize = 4.00;
 
 // mm, base solid height
@@ -54,10 +51,9 @@ minkowskiCylinderHeight = 1;
 module assembly() {
     difference() {
         base();
-        translate([0, 0, _baseHeight])
         for(yd = [1:_row]) {
             for(xd = [1:_colum]) {
-                    translate([(xd * delta)-(delta/2),(yd *delta)-(delta/2),_holeThrough?0:1]) hexBit();
+                    translate([(xd * delta)-(delta/2),(yd *delta)-(delta/2),_baseHeight]) hexBit();
             }
             if(_slotted){
                 translate([-2,(yd *delta)-(delta/2) - 1,minkowskiCylinderHeight + _height - _height * 0.75]) cube([width + 4,2,_height*0.75],center=false);
