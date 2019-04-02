@@ -332,37 +332,45 @@ module ledframe_arm(height = 5, height_mount = 5, arm_width = 13.80, arm_length 
     }
 }
 
+module corner(width = 40.0, size = 10.0, height = 5.0, center = true) {
+    translate(center ? [-width/2, -width/2, 0] : [0, 0, 0])
+        linear_extrude(height = height)
+            union() {
+                square([width, size]);
+                square([size, width]);
+            }
+}
+
+module ledframe_corner() {
+    difference() {
+        size = 35.0;
+        linear_extrude(10)
+           square([size, size], center=true);
+        translate([2, 2, 5])
+            corner(width = size, size = 10, height = 10);
+
+        translate([size / 4, size / 3, 0])
+            m3_allen_screw();
+
+        translate([size / 4, size / 3, 5])
+            linear_extrude(5)
+                rotate([0, 0, -20])
+                    square([14.00, size / 2], center = true);
+    }
+}
+
 
 translate([0, size + 20, 0])
     ledframe_arm();
+
+translate([0, size - 20, 0])
+    mirror([1, 0, 0])
+        ledframe_arm();
 
 ledframe_chassis();
 
 translate([size + 20, 0, 0])
     ledframe_chassis_enclosure();
 
-/*
-difference() {
-    linear_extrude(height = height)
-        square([60.00, 30.00], center = true);
-
-    grid(3, 2, 60, 30)
-        m3_allen_screw();
-}
-*/
-
 translate([-size - 20, 0, 0])
-union() {
-
-    difference() {
-        linear_extrude(height = height)
-            square([30.00, 30.00], center = true);
-
-        m3_allen_screw();
-
-        translate([0, 0, 5])
-            linear_extrude(height = height - 5)
-                rotate([0, 0, 70])
-                    square([14.00, 100.00], center = true);
-    }
-}
+    ledframe_corner();
