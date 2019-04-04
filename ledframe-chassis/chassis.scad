@@ -374,3 +374,7 @@ translate([size + 20, 0, 0])
 
 translate([-size - 20, 0, 0])
     ledframe_corner();
+
+translate([-size - 20, -40, 0])
+    mirror([1, 0, 0])
+        ledframe_corner();

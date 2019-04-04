@@ -14,19 +14,19 @@
 */
 
 // number of rows
-_row = 2;//[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] 					
+_row = 10;//[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] 					
 
 // number of columns
-_colum = 2;//[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+_colum = 8;//[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
  					
 // mm, base height
-_height = 15;
+_height = 13;
 
 // mm, printer tolerance, can be negative, required to compensate specific printer contraction/expansion during print.
-_tolerance = 0.40;
+_tolerance = 0.45;
 
 //mm, between sides and bit
-_extraPadding = 6;
+_extraPadding = 4.5;
 
 // Rounded corners
 _rounded = 1;//[1:Yes,0:No]
