@@ -103,7 +103,7 @@ module corner(size) {
 }
 
 default_vesa_distances = [75, 100];
-hole_size = 4;
+hole_size = 4.40;
 
 
 module make_vesa_holes(size, h, hole_size, center = true) {
@@ -131,7 +131,7 @@ bluetooth_width = 16.80;
 bluetooth_height_minimal = 4.60;
 
 // default arduino nano size
-arduino_lenght = 45.30;
+arduino_lenght = 45.80;
 arduino_width = 18.30;
 arduino_height_minimal = 7.80;
 
@@ -213,8 +213,11 @@ module render_tests() {
         test_avr();
 }
 
-height = 10.0;
+height = 11.00;
 size = 120;
+
+enclosure_height = 5.00;
+arm_height = 6.00;
 
 module ledframe_arm_socket(rotation, height = 8) {
     linear_extrude(height)
@@ -222,7 +225,7 @@ module ledframe_arm_socket(rotation, height = 8) {
             square([45, 14], center = true);
 }
 
-module ledframe_arm_socket_grid(size, height = 8) {
+module ledframe_arm_socket_grid(size, height) {
     i = size / 2;
 
     translate([-i, -i, 0])
@@ -238,7 +241,17 @@ module ledframe_arm_socket_grid(size, height = 8) {
         ledframe_arm_socket(-45, height);
 }
 
-module ledframe_chassis(height = height) {
+module m3_arm_socket_grid() {
+    grid(2, 2, 87.5, 87.5)
+        children();
+}
+
+module m3_additional_screw_grid() {
+    grid(2, 2, 16, 80)
+        children();
+}
+
+module ledframe_chassis(height, arm_height) {
     difference() {
         vesa_base(h = height, size = size);
 
@@ -252,22 +265,22 @@ module ledframe_chassis(height = height) {
             translate([-size/2 + arduino_lenght/2, 0, height /2 + 0.4])
                 avr_nano_pcb_adapter(height, center = true);
 
-            translate([-size/2, -18, 5.6])
+            translate([-size/2, -18, 6.0])
                 rotate([90, 0, 90])
                     power_plug(55);
         }
 
-        translate([-size/2.5, -size/2 - 8, 6.5])
+        translate([-size/2.5, -size/2 - 8, 5.6])
             rotate([0, 90, 45])
                 ws2812_plug(30, 16);
 
-        translate([0, 0, height - 5])
-            ledframe_arm_socket_grid(100, height = 5);
+        translate([0, 0, height - arm_height])
+            ledframe_arm_socket_grid(100, arm_height);
 
-        grid(2, 2, 87.5, 87.5)
+        m3_arm_socket_grid()
             m3_allen_screw();
 
-        grid(2, 2, 20, 65)
+        m3_additional_screw_grid()
             m3_allen_screw();
     }
 }
@@ -282,19 +295,19 @@ module ledframe_m3_screw_adapter(height = 3.0, base_height = 1.0, tolerance = 0.
     ledframe_screw_adapter(height = height, base_height = base_height, screw_size = 6.00, bolt_size = 3.00, tolerance = tolerance);
 }
 
-module ledframe_chassis_enclosure(height = 4) {
+module ledframe_chassis_enclosure(height) {
     difference() {
         vesa_base(h = height, size = size);
 
-        grid(2, 2, 87.5, 87.5)
-            ledframe_m3_screw_adapter(height, base_height = 1.6);
+        m3_arm_socket_grid()
+            ledframe_m3_screw_adapter(height, base_height = height / 2);
 
-        grid(2, 2, 20, 65)
-            ledframe_m3_screw_adapter(height, base_height = 1.6);
+        m3_additional_screw_grid()
+            ledframe_m3_screw_adapter(height, base_height = height / 2);
     }
 }
 
-module ledframe_arm(height = 5, height_mount = 5, arm_width = 13.80, arm_length = 260.00, angle = 25.0) {
+module ledframe_arm(height = arm_height, height_mount = arm_height, arm_width = 13.80, arm_length = 260.00, angle = 25.0) {
     difference() {
         union() {
             translate([30/2 + (tan(angle) * arm_width) - 1.0, -arm_width / 2, 0])
@@ -341,19 +354,22 @@ module corner(width = 40.0, size = 10.0, height = 5.0, center = true) {
             }
 }
 
-module ledframe_corner() {
+module ledframe_arm_end_corner(height, arm_heigh) {
+    offset = height - arm_height;
+
     difference() {
         size = 35.0;
-        linear_extrude(10)
+        linear_extrude(height)
            square([size, size], center=true);
-        translate([2, 2, 5])
-            corner(width = size, size = 10, height = 10);
+
+        translate([2, 2, offset])
+            corner(width = size, size = 10, height = arm_height);
 
         translate([size / 4, size / 3, 0])
             m3_allen_screw();
 
-        translate([size / 4, size / 3, 5])
-            linear_extrude(5)
+        translate([size / 4, size / 3, offset])
+            linear_extrude(arm_height)
                 rotate([0, 0, -20])
                     square([14.00, size / 2], center = true);
     }
@@ -367,14 +383,14 @@ translate([0, size - 20, 0])
     mirror([1, 0, 0])
         ledframe_arm();
 
-ledframe_chassis();
+ledframe_chassis(height, arm_height);
 
 translate([size + 20, 0, 0])
-    ledframe_chassis_enclosure();
+    ledframe_chassis_enclosure(enclosure_height);
 
 translate([-size - 20, 0, 0])
-    ledframe_corner();
+    ledframe_arm_end_corner(height, arm_heigh);
 
 translate([-size - 20, -40, 0])
     mirror([1, 0, 0])
-        ledframe_corner();
+        ledframe_arm_end_corner(height, arm_heigh);
