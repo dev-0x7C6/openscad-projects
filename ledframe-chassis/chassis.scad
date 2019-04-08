@@ -372,6 +372,10 @@ module ledframe_arm_end_corner(height, arm_heigh) {
             linear_extrude(arm_height)
                 rotate([0, 0, -20])
                     square([14.00, size / 2], center = true);
+
+        translate([1, 1, 0])
+            rotate([45, 0, -45])
+                cube([10, 6, 60], center = true);
     }
 }
 
