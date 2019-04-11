@@ -124,6 +124,36 @@ module vesa_base(size = 150, h = 5, distances = default_vesa_distances) {
    }
 }
 
+module vesa_base_height_adapter(size = 150, h = 5, distances = default_vesa_distances) {
+    half = size/2;
+
+    difference() {
+        translate([0, 0, h/2])
+            cube([size, size, h], center = true);
+
+        for (distance = distances)
+            make_vesa_holes(distance, h, hole_size);
+   }
+}
+
+module vesa_base_height_adapter(l, w, h = 3, distances = default_vesa_distances) {
+    half = size/2;
+
+    difference() {
+        translate([0, 0, h/2])
+            cube([l, w, h], center = true);
+        
+        for (i = [0, 15, 30, 45, 60]) 
+            translate([i - 30, 0, 0])
+                for (distance = distances)
+                    make_vesa_holes(distance, h, hole_size);
+   }
+}
+
+translate([0, -size - 30, 0])
+    vesa_base_height_adapter(180, 120);
+
+
 
 // default hc06 bluetooth size 
 bluetooth_lenght = 38.20;
