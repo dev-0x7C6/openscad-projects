@@ -56,22 +56,28 @@ module repeat_y(times, width, center = true) {
 }
 
 module lion_enclosure(height = 24.00, wall = 4.00, base_height = 2.20) {
-    workspace = [18.50, 72.00];
-    base = [18.50 + (wall * 2), 72.00 + (wall * 2)];
+    r = 18.50;
+    workspace = [r, 72.00];
+    base = [r + (wall * 2), 72.00 + (wall * 2)];
     
     ziptie_w = 4.00;
-    
+
     difference() { 
         linear_extrude(height)
             square(base, center = true);
         
-        translate([0, 0, base_height])
-            linear_extrude(height - base_height)
+    translate([0, workspace[1] / 2, base_height + r / 2])
+        rotate([90, 0, 00])
+            linear_extrude(workspace[1])
+                circle(r = r / 2);
+        
+        translate([0, 0, base_height + r / 2])
+            linear_extrude(height - base_height - r / 2)
                 square(workspace, center = true);
         
-        translate([0, 0, height - 6.00])
+        translate([0, 0, height - 5.50])
             linear_extrude(2.00)
-                repeat_y(5, workspace[1] - (wall * 2) - ziptie_w / 2)
+                repeat_y(6, workspace[1] - (wall * 2) - ziptie_w / 2 - 10)
                     square([base[0], 4.00], center = true);
     }
 }
@@ -104,9 +110,15 @@ module stage2_add_workspace(size) {
         translate([0, 0, size[2] - electronics_workspace[2]])
             linear_extrude(electronics_workspace[2])
                 square([electronics_workspace[0], electronics_workspace[1]], center = true);
+        
         translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 4])
             linear_extrude(4)
                 square([size[0], 7.00], center = true);
+        
+        translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 6])
+            linear_extrude(6)
+                square([7.00, 7.00], center = true);
+        
         translate([7.00/2, -electronics_workspace[1] / 4, size[2] - electronics_workspace[2] - 4])
             linear_extrude(4)
                 square([7.00, electronics_workspace[1] / 2], center = true);
@@ -135,13 +147,36 @@ module stage3_add_dc2dc_converter(size) {
     }
 }
 
-stage3_add_dc2dc_converter(base_size);
-/*
-translate([0, -base_size[0] /2, 0])
-    rotate([0, 0, 90])
-        lion_enclosure();
+module stage4_add_lion_enclosures(size) {
+    union() {
+        stage3_add_dc2dc_converter(size);
 
-translate([0, base_size[0] /2, 0])
-    rotate([0, 0, 90])
-        lion_enclosure();
-*/
+        translate([0, -base_size[1] / 2 - (18.50 + (4.00 * 2)) / 2, 0])
+            rotate([0, 0, 90])
+                lion_enclosure();
+
+        translate([0, base_size[1] / 2 + (18.50 + (4.00 * 2)) / 2, 0])
+            rotate([0, 0, 90])
+                lion_enclosure();
+    }
+}
+
+
+module stage5_add_dc_wires(size) {
+    difference() {
+        stage4_add_lion_enclosures(size);
+
+        translate([10.5, 0, size[2] - 4])
+            linear_extrude(7)
+                square([4.00, size[1] + 10], center = true);
+        
+        translate([-10.5, 0, size[2] - 4])
+            linear_extrude(7)
+                square([4.00, size[1] + 10], center = true);
+    }
+}
+
+//lion_enclosure();
+
+stage5_add_dc_wires(base_size);
+
