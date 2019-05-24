@@ -151,11 +151,11 @@ module stage3_add_dc2dc_converter(size) {
 
         translate([-size[0] / 2, electronics_workspace[1] / 2 - power_plug_slot_r, size[2] / 2 + 1.00])
             rotate([90, 0, 90])
-                power_plug(0);
+                power_plug();
         
         translate([-size[0] / 2, -electronics_workspace[1] / 2 + power_switch_slot[0] / 2, size[2] / 2 + 1.00])
             rotate([90, 0, 90])
-                power_switch(0);
+                power_switch();
  
     }
 }
@@ -194,7 +194,7 @@ module final_skateboard_power_base() {
 }
 
 
-final_skateboard_power_base(base_size);
+final_skateboard_power_base();
 
 translate([100, 0, 0])
     lion_enclosure_lid();
