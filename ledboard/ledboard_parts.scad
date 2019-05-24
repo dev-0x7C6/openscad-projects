@@ -55,35 +55,46 @@ module repeat_y(times, width, center = true) {
             children();
 }
 
-module lion_enclosure(height = 24.00, wall = 4.00, base_height = 2.20) {
-    r = 18.50;
-    workspace = [r, 72.00];
-    base = [r + (wall * 2), 72.00 + (wall * 2)];
-    
+lion_battery_diameter = 18.50;
+lion_battery_wall_size = 4.00;
+
+lion_workspace = [lion_battery_diameter, 72.00];
+lion_base = [lion_battery_diameter + (lion_battery_wall_size * 2), 72.00 + (lion_battery_wall_size * 2)];
+
+module lion_enclosure(height = 24.00, base_height = 2.20) {
     ziptie_w = 4.00;
 
     difference() { 
         linear_extrude(height)
-            square(base, center = true);
+            square(lion_base, center = true);
         
-    translate([0, workspace[1] / 2, base_height + r / 2])
+    translate([0, lion_workspace[1] / 2, base_height + lion_battery_diameter / 2])
         rotate([90, 0, 00])
-            linear_extrude(workspace[1])
-                circle(r = r / 2);
+            linear_extrude(lion_workspace[1])
+                circle(r = lion_battery_diameter / 2);
         
-        translate([0, 0, base_height + r / 2])
-            linear_extrude(height - base_height - r / 2)
-                square(workspace, center = true);
+        translate([0, 0, base_height + lion_battery_diameter / 2])
+            linear_extrude(height - base_height - lion_battery_diameter / 2)
+                square(lion_workspace, center = true);
         
         translate([0, 0, height - 5.50])
             linear_extrude(2.00)
-                repeat_y(6, workspace[1] - (wall * 2) - ziptie_w / 2 - 10)
-                    square([base[0], 4.00], center = true);
+                repeat_y(6, lion_workspace[1] - (lion_battery_wall_size * 2) - ziptie_w / 2 - 10)
+                    square([lion_base[0], 4.00], center = true);
     }
 }
 
+module lion_enclosure_lid() {
+    linear_extrude(1)
+        square(lion_base, center = true);
+
+    translate([0, 0, 1])
+        linear_extrude(1.60)
+            square(lion_workspace, center = true);
+}
+
 base_size = [80.00, 56.00, 16.00];
-electronics_workspace = [58.00, 28.00, 8.00];
+electronics_workspace = [58.00, 28.00, 7.00];
 dc2dc_converter_workspace = [25.00, 5.00, 13.00];
 
 module stage0_plainbase(size) {
@@ -111,17 +122,22 @@ module stage2_add_workspace(size) {
             linear_extrude(electronics_workspace[2])
                 square([electronics_workspace[0], electronics_workspace[1]], center = true);
         
+        translate([-8, 0, size[2] - electronics_workspace[2] - 4.80])
+            linear_extrude(6)
+                square([20.00, 14.00], center = true);
+        
+        
         translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 4])
             linear_extrude(4)
                 square([size[0], 7.00], center = true);
         
-        translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 6])
+        translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 4])
+            linear_extrude(4)
+                square([size[0], 7.00], center = true);
+        
+        translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 7])
             linear_extrude(6)
                 square([7.00, 7.00], center = true);
-        
-        translate([7.00/2, -electronics_workspace[1] / 4, size[2] - electronics_workspace[2] - 4])
-            linear_extrude(4)
-                square([7.00, electronics_workspace[1] / 2], center = true);
     }
 }
 
@@ -132,10 +148,7 @@ module stage3_add_dc2dc_converter(size) {
     
     difference() {
         stage2_add_workspace(size);
-        translate([0, -electronics_workspace[1]/2 - (w/4), size[2] - h])
-            linear_extrude(h)
-                square([l, w], center = true);
-        
+
         translate([-size[0] / 2, electronics_workspace[1] / 2 - power_plug_slot_r, size[2] / 2 + 1.00])
             rotate([90, 0, 90])
                 power_plug(0);
@@ -176,7 +189,13 @@ module stage5_add_dc_wires(size) {
     }
 }
 
-//lion_enclosure();
+module final_skateboard_power_base() {
+    stage5_add_dc_wires(base_size);
+}
 
-stage5_add_dc_wires(base_size);
+
+final_skateboard_power_base(base_size);
+
+translate([100, 0, 0])
+    lion_enclosure_lid();
 
