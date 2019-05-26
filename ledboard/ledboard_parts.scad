@@ -9,7 +9,7 @@ module power_plug() {
     union() {
         linear_extrude(2.00)
             circle(r = power_plug_rant_r);
-        
+
         translate([0, 0, 2.00])
             linear_extrude(20.00)
                 circle(r = power_plug_slot_r);
@@ -22,7 +22,6 @@ module power_plug() {
 
 power_switch_rant = [15.00, 11.00, 5.00];
 power_switch_slot = [14.50, 9.00, 17.00];
-
 
 module power_switch() {
     linear_extrude(power_switch_rant[2])
@@ -67,16 +66,16 @@ module lion_enclosure(height = 24.00, base_height = 2.20) {
     difference() { 
         linear_extrude(height)
             square(lion_base, center = true);
-        
+
     translate([0, lion_workspace[1] / 2, base_height + lion_battery_diameter / 2])
         rotate([90, 0, 00])
             linear_extrude(lion_workspace[1])
                 circle(r = lion_battery_diameter / 2);
-        
+
         translate([0, 0, base_height + lion_battery_diameter / 2])
             linear_extrude(height - base_height - lion_battery_diameter / 2)
                 square(lion_workspace, center = true);
-        
+
         translate([0, 0, height - 5.50])
             linear_extrude(2.00)
                 repeat_y(6, lion_workspace[1] - (lion_battery_wall_size * 2) - ziptie_w / 2 - 10)
@@ -121,20 +120,19 @@ module stage2_add_workspace(size) {
         translate([0, 0, size[2] - electronics_workspace[2]])
             linear_extrude(electronics_workspace[2])
                 square([electronics_workspace[0], electronics_workspace[1]], center = true);
-        
+
         translate([-8, 0, size[2] - electronics_workspace[2] - 4.80])
             linear_extrude(6)
                 square([20.00, 14.00], center = true);
-        
-        
+
         translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 4])
             linear_extrude(4)
                 square([size[0], 7.00], center = true);
-        
+
         translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 4])
             linear_extrude(4)
                 square([size[0], 7.00], center = true);
-        
+
         translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 7])
             linear_extrude(6)
                 square([7.00, 7.00], center = true);
@@ -145,19 +143,19 @@ module stage3_add_dc2dc_converter(size) {
     l = dc2dc_converter_workspace[0];
     w = dc2dc_converter_workspace[1];
     h = dc2dc_converter_workspace[2];
-    
+
     difference() {
         stage2_add_workspace(size);
 
         translate([-size[0] / 2, electronics_workspace[1] / 2 - power_plug_slot_r, size[2] / 2 + 1.00])
             rotate([90, 0, 90])
                 power_plug();
-        
+
         translate([-size[0] / 2, -electronics_workspace[1] / 2 + power_switch_slot[0] / 2, size[2] / 2 + 1.00])
             rotate([90, 0, 90])
                 power_switch();
- 
-    }
+
+     }
 }
 
 module stage4_add_lion_enclosures(size) {
@@ -182,7 +180,7 @@ module stage5_add_dc_wires(size) {
         translate([10.5, 0, size[2] - 4])
             linear_extrude(7)
                 square([4.00, size[1] + 10], center = true);
-        
+
         translate([-10.5, 0, size[2] - 4])
             linear_extrude(7)
                 square([4.00, size[1] + 10], center = true);
@@ -191,11 +189,10 @@ module stage5_add_dc_wires(size) {
 
 module final_skateboard_power_base() {
     stage5_add_dc_wires(base_size);
+
+    translate([75, 0, 0])
+        lion_enclosure_lid();
 }
 
-
 final_skateboard_power_base();
-
-translate([100, 0, 0])
-    lion_enclosure_lid();
 
