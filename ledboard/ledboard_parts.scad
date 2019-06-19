@@ -84,11 +84,11 @@ module lion_enclosure(height = 24.00, base_height = 2.20) {
 }
 
 module lion_enclosure_lid() {
-    linear_extrude(1)
+    linear_extrude(2)
         square(lion_base, center = true);
 
-    translate([0, 0, 1])
-        linear_extrude(1.60)
+    translate([0, 0, 2])
+        linear_extrude(1.40)
             square(lion_workspace, center = true);
 }
 
@@ -196,3 +196,67 @@ module final_skateboard_power_base() {
 
 final_skateboard_power_base();
 
+
+// default arduino nano size
+arduino_lenght = 45.80;
+arduino_width = 18.30;
+arduino_height_minimal = 7.80;
+
+module avr_nano_pcb_adapter(h = 8.00, center = false) {
+    board_l = arduino_lenght;
+    board_w = arduino_width;
+    board_h = max(h, arduino_height_minimal);
+
+    pin_rail_w = 2.00;
+    pin_rail_h = 2.00;
+
+    pcb_h = 1.60;
+
+    usb_bump_h = pin_rail_h + pcb_h;
+    usb_bump_l = 1.75;
+
+    module usb_port() {
+        h = 4.50;
+        w = 8.00;
+
+       translate([0, 0, board_h/2])
+        difference() {
+            cube([usb_bump_l, board_w, board_h], center = true);
+            translate([0, 0, -(board_h/2 - h/2) + usb_bump_h])
+            cube([usb_bump_l, w, h], center = true);
+        }
+    }
+
+    translate(center ? [0, 0, 0] : [board_l/2, board_w/2, board_h/2])
+        difference() {
+            cube([board_l, board_w, board_h], center = true);
+            // left pin rail
+            translate([0, board_w/2 - pin_rail_w/2, -(board_h/2 - pin_rail_h/2)])
+                cube([board_l, pin_rail_w, pin_rail_h], center = true);
+            // right pin rail
+            translate([0, -(board_w/2 - pin_rail_w/2), -(board_h/2 - pin_rail_h/2)])
+                cube([board_l, pin_rail_w, pin_rail_h], center = true);
+            // usb bump
+            translate([-(board_l/2 - usb_bump_l/2), 0, -(board_h/2 - pin_rail_h/2)])
+                cube([usb_bump_l, board_w, usb_bump_h], center = true);
+            // usb port
+            translate([-(board_l/2 - usb_bump_l/2), 0, -(board_h/2)])
+                usb_port();
+        }
+}
+
+translate([0, 100, 0]) {
+    difference() {
+        stage1_add_bottom_led_guide(base_size);
+        translate([base_size[0] / 2 - arduino_lenght / 2 + 0.01, 0, base_size[2] - 10 / 2])
+            mirror([1, 0, 0])
+                avr_nano_pcb_adapter(10, center = true);
+        translate([(-base_size[0]/2), 0, base_size[2] - 4.00])
+            linear_extrude(4.00)
+                square([base_size[0], 7.00], center = true);
+    }
+}
+
+translate([0, -100, 0]) {
+    stage0_plainbase([base_size[0], base_size[1], 1.00]);
+}
