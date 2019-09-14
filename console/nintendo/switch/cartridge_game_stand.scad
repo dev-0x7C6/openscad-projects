@@ -42,15 +42,16 @@ module enclosure_box() {
 
     difference() {
         linear_extrude(h + enclosure_base_thickness)
-            square([l + enclosure_wall_thickness * 2, w + enclosure_wall_thickness * 2]);
+            square([l + enclosure_wall_thickness * 2, w + enclosure_wall_thickness * 2], center = true);
 
         translate([0, 0, enclosure_base_thickness])
-            square([l, w]);
+            linear_extrude(h)
+                square([l, w], center = true);
 
     }
 }
 
 game_stand();
 
-translate([100, 100, 0])
+translate([0, 200, 0])
     enclosure_box();
