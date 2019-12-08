@@ -1,4 +1,4 @@
-$fn = 128;
+$fn = 32;
 
 // Power plug module
 
@@ -60,7 +60,7 @@ lion_battery_wall_size = 4.00;
 lion_workspace = [lion_battery_diameter, 72.00];
 lion_base = [lion_battery_diameter + (lion_battery_wall_size * 2), 72.00 + (lion_battery_wall_size * 2)];
 
-module lion_enclosure(height = 24.00, base_height = 2.20) {
+module lion_enclosure(height = 25.00, base_height = 3.00) {
     ziptie_w = 4.00;
 
     difference() { 
@@ -89,10 +89,10 @@ module lion_enclosure_lid() {
 
     translate([0, 0, 2])
         linear_extrude(1.40)
-            square(lion_workspace, center = true);
+            square([lion_workspace[0] - 0.50, lion_workspace[1] - 0.50], center = true);
 }
 
-base_size = [80.00, 56.00, 16.00];
+base_size = [80.00, 56.00, 18.00];
 electronics_workspace = [58.00, 28.00, 7.00];
 dc2dc_converter_workspace = [25.00, 5.00, 13.00];
 
@@ -106,11 +106,11 @@ module stage0_plainbase(size) {
     }
 }
 
-module stage1_add_bottom_led_guide(size) {
+module stage1_add_bottom_led_guide(size, led_tunel_height = 3.00, led_tunel_width = 14.00) {   
     difference() {
         stage0_plainbase(size);
-        linear_extrude(2.60)
-            square([size[0], 14.00], center = true);
+        linear_extrude(led_tunel_height)
+            square([size[0], led_tunel_width], center = true);
     }
 }
 
@@ -133,7 +133,7 @@ module stage2_add_workspace(size) {
             linear_extrude(4)
                 square([size[0], 7.00], center = true);
 
-        translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 7])
+        translate([size[0] / 2, 0, size[2] - electronics_workspace[2] - 10]) //todo
             linear_extrude(6)
                 square([7.00, 7.00], center = true);
     }
