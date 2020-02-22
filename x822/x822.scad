@@ -59,88 +59,117 @@ module sdcard_slot(h = 38.00) {
         }
     }
 }
-/*
-difference() {
-    rotate([0.00, -45.00, 0.00])
-        sdcard_slot();
-    translate([0, 0, 23])
-        linear_extrude(8.00)
-            square([80.00, 80.00], center = true);
-}
+
+module lid() {
+    /*
+    difference() {
+        rotate([0.00, -45.00, 0.00])
+            sdcard_slot();
+        translate([0, 0, 23])
+            linear_extrude(8.00)
+                square([80.00, 80.00], center = true);
+    }
 */
 
+    linear_extrude(1.00)
+        difference() {
+            square(workspace_wall, center = true);
+            translate([workspace[0] / 2 - 33.0, 0, 0])
+                square(47.00, center = true);
+        }
+        
+    tolerance = 0.40;
 
-linear_extrude(base_height)
+    translate([0.00, 0.00, 1.00])
+        difference() {
+            linear_extrude(10.00)
+                difference() {
+                    square([workspace[0] - tolerance, workspace[1] - tolerance], center = true);
+                    square([workspace[0] - wall * 2.0 - tolerance, workspace[1] - wall * 2.0 - tolerance], center = true);
+                }
+                
+            translate([workspace[0] / 2 - 33.0, workspace[1] / 2, 2.00])
+                linear_extrude(8.00)
+                    square(56.00, center = true);
+        }
+
+}
+
+lid();
+
+module case() {
+    linear_extrude(base_height)
+        difference() {
+            square(workspace, center = true);
+            translate([0, y_offset / 2.00, 0])
+                grid(3, 2, 157.50, 57.50)
+                    circle(r = 1.65);
+        }
+        
+    first_board_level = base_height + 15.00 + 1.60;
+    second_board_level = first_board_level + 12.00 + 1.75;
+
+
+
     difference() {
-        square(workspace, center = true);
-        translate([0, y_offset / 2.00, 0])
-            grid(3, 2, 157.50, 57.50)
-                circle(r = 1.65);
-    }
-    
-first_board_level = base_height + 15.00 + 1.60;
-second_board_level = first_board_level + 12.00 + 1.75;
-
-
-
-difference() {
-    union() {
-        linear_extrude(height + base_height) {
-            difference() {
-                square(workspace_wall, center = true);
-                square(workspace, center = true);
+        union() {
+            linear_extrude(height + base_height) {
+                difference() {
+                    square(workspace_wall, center = true);
+                    square(workspace, center = true);
+                }
             }
+            
+            color("red")
+                translate([0.00, -workspace_wall[1] / 2, 0])
+                    mirror([0, 1, 0])
+                        translate([0, -wall / 2.00  - 5.40, 0])
+                            led_corner(w = workspace[0] - 20.00, h = first_board_level - 2.00);
+            
+            color("red")
+                translate([workspace_wall[0] / 2, 0, 0])
+                    mirror([-90, 90, 0])
+                        translate([0, -wall / 2.00 - 5.40, 0])
+                            led_corner(w = workspace[1] - 20.00, h = first_board_level - 2.00);
+            
+            color("red")
+                translate([-workspace_wall[0] / 2, 0, 0])
+                    mirror([90, 90, 0])
+                        translate([0, -wall / 2.00 - 5.40, 0])
+                            led_corner(w = workspace[1] - 20.00, h = first_board_level - 2.00);
         }
         
-        color("red")
-            translate([0.00, -workspace_wall[1] / 2, 0])
-                mirror([0, 1, 0])
-                    translate([0, -wall / 2.00  - 5.40, 0])
-                        led_corner(w = workspace[0] - 20.00, h = first_board_level - 2.00);
-        
-        color("red")
-            translate([workspace_wall[0] / 2, 0, 0])
-                mirror([-90, 90, 0])
-                    translate([0, -wall / 2.00 - 5.40, 0])
-                        led_corner(w = workspace[1] - 20.00, h = first_board_level - 2.00);
-        
-        color("red")
-            translate([-workspace_wall[0] / 2, 0, 0])
-                mirror([90, 90, 0])
-                    translate([0, -wall / 2.00 - 5.40, 0])
-                        led_corner(w = workspace[1] - 20.00, h = first_board_level - 2.00);
-    }
-    
-    translate([workspace_wall[0] / 2, y_offset / 2, second_board_level - 3.00])
-        linear_extrude(10) {
-            difference() {
-                square([wall * 2, 58.00], center = true);
+        translate([workspace_wall[0] / 2, y_offset / 2, second_board_level - 3.00])
+            linear_extrude(10) {
+                difference() {
+                    square([wall * 2, 58.00], center = true);
+                }
             }
-        }
+            
         
-    
-    translate([55.70, workspace_wall[1] / 2, second_board_level])
-        linear_extrude(16.20) {
-                square([54.00, wall * 2], center = true);
-        }
-    
-    translate([56.70, workspace_wall[1] / 2, first_board_level])
-        linear_extrude(8.40) {
-                square([16.50, wall * 2], center = true);
-        }
-    
-    translate([36.00, workspace_wall[1] / 2, first_board_level])
-        linear_extrude(8.40) {
-                square([16.50, wall * 2], center = true);
-        }
+        translate([54.80, workspace_wall[1] / 2, second_board_level])
+            linear_extrude(16.20) {
+                    square([54.00, wall * 2], center = true);
+            }
         
-    translate([-30.00, workspace_wall[1] / 2, first_board_level])
-        linear_extrude(8.40) {
-                square([16.50, wall * 2], center = true);
-        }
+        translate([56.70, workspace_wall[1] / 2, first_board_level])
+            linear_extrude(8.40) {
+                    square([16.50, wall * 2], center = true);
+            }
         
-    translate([-56.00, workspace_wall[1] / 2, first_board_level])
-        linear_extrude(11.60) {
-                square([9.00, wall * 2], center = true);
-        }
+        translate([36.00, workspace_wall[1] / 2, first_board_level])
+            linear_extrude(8.40) {
+                    square([16.50, wall * 2], center = true);
+            }
+            
+        translate([-30.00, workspace_wall[1] / 2, first_board_level])
+            linear_extrude(8.40) {
+                    square([16.50, wall * 2], center = true);
+            }
+            
+        translate([-56.00, workspace_wall[1] / 2, first_board_level])
+            linear_extrude(11.60) {
+                    square([9.00, wall * 2], center = true);
+            }
+    }
 }
