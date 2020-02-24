@@ -25,7 +25,8 @@ module grid(x, y, width, height, center = true)
         }
 }
 
-module prism(l, w, h){
+module prism(l, w, h, center = true){
+    translate([center ? -l / 2 : 0, center ? -w / 2 : 0, center ? -h / 2 : 0])
     polyhedron(
            points=[[0,0,0], [l,0,0], [l,w,0], [0,w,0], [0,w,h], [l,w,h]],
            faces=[[0,1,2,3],[5,4,3,2],[0,4,5,1],[0,3,4],[5,2,1]]
@@ -44,11 +45,12 @@ module led_corner(w = 10.00, h = 12.00, thickness = wall) {
     }
 }
 
-module sdcard_slot(h = 38.00) {
+module sdcard_slot(h = 40.00, center = true) {
+    translate([0, 0, center ? -h / 2 : 0])
     union() {
         linear_extrude(1.00)
             difference() {
-                square([7.30, 25.10], center = true);
+                square([8.00, 25.40], center = true);
                 square([5.00, 22.00], center = true);
             }
 
@@ -60,42 +62,30 @@ module sdcard_slot(h = 38.00) {
     }
 }
 
-module lid() {
-    /*
-    difference() {
-        rotate([0.00, -45.00, 0.00])
-            sdcard_slot();
-        translate([0, 0, 23])
-            linear_extrude(8.00)
-                square([80.00, 80.00], center = true);
-    }
-*/
-
-    linear_extrude(1.00)
+module lid(height = 2.00, wall_height = 14.00) {
+    linear_extrude(height)
         difference() {
             square(workspace_wall, center = true);
-            translate([workspace[0] / 2 - 33.0, 0, 0])
-                square(47.00, center = true);
+            translate([workspace[0] / 2 - 36.25 + 1.25 , 5.00 + 1.25, 0])
+                square(42.00, center = true);
         }
         
-    tolerance = 0.40;
+    tolerance = 0.30;
 
-    translate([0.00, 0.00, 1.00])
+    translate([0.00, 0.00, height])
         difference() {
-            linear_extrude(10.00)
+            linear_extrude(wall_height)
                 difference() {
                     square([workspace[0] - tolerance, workspace[1] - tolerance], center = true);
                     square([workspace[0] - wall * 2.0 - tolerance, workspace[1] - wall * 2.0 - tolerance], center = true);
                 }
                 
-            translate([workspace[0] / 2 - 33.0, workspace[1] / 2, 2.00])
-                linear_extrude(8.00)
+            translate([workspace[0] / 2 - 33.0, -workspace[1] / 2, 2.00])
+                linear_extrude(wall_height - 2.00)
                     square(56.00, center = true);
         }
 
 }
-
-lid();
 
 module case() {
     linear_extrude(base_height)
@@ -173,3 +163,8 @@ module case() {
             }
     }
 }
+
+translate([workspace_wall[0] * 1.1, 0, 0])
+    lid();
+
+case();
