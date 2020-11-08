@@ -1,10 +1,11 @@
 base_size = [80.00, 103.00];
 
-bottom_thickness = 1.60;
+bottom_thickness = 1.40;
 top_thickness = 0.00;
 
 disk_width = 70.40;
 disk_space = 9.40;
+//disk_space = 5.00;
 
 height = disk_space + bottom_thickness + top_thickness;
 
@@ -81,34 +82,38 @@ module lying_cylinder(w = 1.00, r = 5.00, center = true) {
 }
 
 
-module disk_mounting_holes(width = disk_width, gap = 4.00, r_inner = 1.50, r_outter = 2.50) {
-    translate([0, 0, bottom_thickness + 3.00])
-    rotate([0, 0, 90])
-        union() {            
-            translate([0, 0, r_inner - r_outter])
-            difference() {
-                lying_cylinder(width * 2, r = r_outter);
-                lying_cylinder(width + gap, r = r_outter);
+module disk_mounting_holes(width = disk_width, gap = 4.00, r_inner = 1.50, r_outter = 2.60) {
+    translate([0, 0, 0])
+        rotate([0, 0, 90])
+            union() {            
+                translate([0, 0, r_inner - r_outter])
+                difference() {
+                    lying_cylinder(width * 2, r = r_outter);
+                    lying_cylinder(width + gap, r = r_outter);
+                }
+                
+                lying_cylinder(width + gap, r = r_inner);
             }
-            
-            lying_cylinder(width + gap, r = r_inner);
-        }
 }
 
 difference() {
     linear_extrude(height)
         base(base_size);
-    translate([0, wall/2, bottom_thickness])
-        linear_extrude(disk_space)
-            square([disk_width, base_size[1] - wall], center = true);
     
     cartridge_rail(base_size[0], base_size[1], 3.00);
     
-    translate([0, base_size[1] / 2 - 14.00, 0])
-        disk_mounting_holes(disk_width, gap = 2.00);
+    translate([0, wall/2 + 0.01, bottom_thickness]) {
+        linear_extrude(disk_space + 0.01)
+            square([disk_width, base_size[1] - wall], center = true);
     
-    translate([0, base_size[1] / 2 - 14.00 - 74.00, 0])
-        disk_mounting_holes(disk_width, gap = 2.00);
+        translate([0, 0, 1.40]) {
+            translate([0, base_size[1] / 2 - 15.00, 0])
+                disk_mounting_holes(disk_width, gap = 2.00);
+            
+            translate([0, base_size[1] / 2 - 15.00 - 76.50, 0])
+                disk_mounting_holes(disk_width, gap = 2.00);
+        }
+    }
     
     ///translate([0, -narrow[1]/2, 0])
      //   grid(2, 2, base_size[0] - 5, base_size[1] - narrow[1] - 5)
