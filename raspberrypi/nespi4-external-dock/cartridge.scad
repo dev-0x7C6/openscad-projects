@@ -110,7 +110,7 @@ difference() {
             translate([0, base_size[1] / 2 - 15.00, 0])
                 disk_mounting_holes(disk_width, gap = 2.00);
             
-            translate([0, base_size[1] / 2 - 15.00 - 76.50, 0])
+            translate([0, base_size[1] / 2 - 15.00 - 76.80, 0])
                 disk_mounting_holes(disk_width, gap = 2.00);
         }
     }
