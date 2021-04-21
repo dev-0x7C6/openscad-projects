@@ -24,11 +24,11 @@ module logo_dxf(filename, height, size) {
 }
 
 union() {
-   //translate([0, 3, 0])
-      //  color("red")
-        //    cube([model_width, model_lenght, 4]);
-    //extended_prism(model_width, 9, model_height, 3);
+   translate([0, 3, 0])
+       color("red")
+           cube([model_width, model_lenght, 4]);
+    extended_prism(model_width, 9, model_height, 3);
     color([0, 0, 0])
-        //rotate([(180 * (model_height/9.0) / PI) - 90.0,0,0])
+        rotate([(180 * (model_height/9.0) / PI) - 90.0,0,0])
             logo_dxf("resources/wiiu.dxf", 2, model_height);
 }
