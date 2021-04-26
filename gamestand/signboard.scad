@@ -1,49 +1,48 @@
-//$fn = 128;
-//$fa = 1;
-//$fs = 0.5;
+$fn = $preview ? 8 : 128;
 
-$fn = $preview ? 8 : 64;
-$fa = 20;
-$fs = 20;
+// logo
+resource = "resources/audio-cd.svg";
 
-resources = [
-    "resources/nintendo/wii.svg", // 0
-    "resources/nintendo/wiiu.svg", // 1
-    "resources/nintendo/3ds.svg", // 2
-    "resources/nintendo/gamecube.svg", // 3
-    "resources/nintendo/switch.svg", // 4
-    "resources/sega/dreamcast.svg", // 5
-    "resources/sony/ps3.svg", // 6
-    "resources/sony/ps4.svg", // 7
-    "resources/microsoft/xbox.svg", // 8
-    "resources/microsoft/xbox-one.svg", // 9 
-    "resources/microsoft/xbox-360.svg", // 10
-    "resources/audio-cd.svg", // 11
-    "resources/bluray.svg", // 12
-];
+// standalone logo
+generate_logo = true;
 
-// 
-resource_index = 6;
+// panel model
+generate_panel = true;
 
-resource = resources[resource_index];
+/*
+"resources/nintendo/wii.svg" //svg ok, printed
+"resources/nintendo/wiiu.svg" //svg ok, printed
+"resources/nintendo/3ds.svg" //svg ok, printed
+"resources/nintendo/gamecube.svg" //svg ok, printed
+"resources/nintendo/switch.svg" //svg ok, printed
+"resources/sega/dreamcast.svg" //svg ok, printed
+"resources/sony/ps3.svg" //svg ok, printed
+"resources/sony/ps4.svg" //svg ok, printed
+"resources/microsoft/xbox.svg" //svg ok
+"resources/microsoft/xbox-one.svg" //svg ok
+"resources/microsoft/xbox-360.svg" //svg ok
+"resources/audio-cd.svg" //svg fail
+"resources/bluray.svg" //svg fail
+*/
+
+// handle space beetween mounting
+handle_space = 13.00;
+//handle_space = 19.15;
 
 font_deep = 1.40;
 font_h = 1.40 + font_deep;
 
 base_h = 2.60;
-assert(base_h + 0.40 >= font_deep, "lower font_deep or rise base_h");
-
-
 front = [161.00, 27.00];
 
 handle_h = 6.00;
 handle_thickness = 1.60;
 
-handle_space = 13.00;
-//handle_space = 19.15;
-
 // -1 - bottom, 0 - center, 1 - top
 handle_align = -1;
+
+// asserts
+assert(base_h + 0.40 >= font_deep, "lower font_deep or rise base_h");
 assert(handle_align >= -1, "handle_align should be greater or equal to -1");
 assert(handle_align <= 1, "handle_align should be lower or equal to 1");
 
@@ -90,9 +89,12 @@ module panel() {
 
 module logo() {
     color("DeepSkyBlue")
-        render_logo(resource, font_h, front[1] * 0.6, delta = -0.05);
+        render_logo(resource, font_h, front[1] * 0.6, delta = -0.06);
 }
 
-panel();
-translate([0, front[1], 0])
-    logo();
+if (generate_panel)
+    panel();
+
+if (generate_logo)
+    translate([0, generate_panel ? front[1] : 0, 0])
+        logo();
