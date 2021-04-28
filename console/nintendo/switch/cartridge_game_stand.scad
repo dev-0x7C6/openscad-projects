@@ -1,7 +1,7 @@
-grid = [5, 8];
+grid = [6, 9];
 
 block_size = [24.00, 20.00, 9.00];
-additional_height_for_next_row = 7.00;
+additional_height_for_next_row = 4.00;
 
 cardridge_height_after_insert = 25.00;
 enclosure_tolerance = 0.40;
@@ -9,7 +9,7 @@ enclosure_base_thickness = 0.20;
 enclosure_wall_thickness = 0.80;
 
 module cartridge_slot(h = 10.00, center = true) {
-    cube([21.80, 3.60, h], center);
+    cube([22.00, 3.80, h], center);
 }
 
 module cartridge_adapter(additional_h = 0.00,  center = true) {
