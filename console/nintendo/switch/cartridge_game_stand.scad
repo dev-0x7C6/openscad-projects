@@ -1,7 +1,7 @@
-grid = [6, 9];
+grid = [9, 6];
+additional_height_for_next_row = 4.00;
 
 block_size = [24.00, 20.00, 9.00];
-additional_height_for_next_row = 4.00;
 
 cardridge_height_after_insert = 25.00;
 enclosure_tolerance = 0.40;
@@ -29,8 +29,8 @@ module cartridge_adapter(additional_h = 0.00,  center = true) {
 }
 
 module game_stand() {
-    for (y = [0:(grid[0] - 1)])
-        for (x = [0:(grid[1] - 1)])
+    for (x = [0:(grid[0] - 1)])
+        for (y = [0:(grid[1] - 1)])
             translate([block_size[0] * x, block_size[1] * y, 0])
                 cartridge_adapter(additional_height_for_next_row * y);
 }
@@ -53,5 +53,5 @@ module enclosure_box() {
 
 game_stand();
 
-translate([0, 200, 0])
-    enclosure_box();
+//translate([0, 200, 0])
+//    enclosure_box();
