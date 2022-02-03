@@ -1,10 +1,10 @@
-outer_r = 8.60;
-inner_r = 5.72;
+outer_r = 8.80;
+inner_r = 5.70;
 hole_r = 3.20;
 
 h = 16.00;
 
-base_h = 2.00;
+base_h = 0.00;
 
 difference() {
     linear_extrude(h)
