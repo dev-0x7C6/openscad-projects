@@ -24,7 +24,7 @@ module grid(x = 1, y = 1) {
 }
 
 
-module window(size = [17.00, 23.60], h = 1.60, inner_t = 0.8, outer_t = 0.8, shutter_h = 0.60, shutter_right = 9.00, shutter_left = 9.00, shutter_top = 0.80, shutter_bottom = 0.40, with_segment = true) {
+module window(size = [17.00, 23.60], h = 1.60, inner_t = 0.8, outer_t = 0.8, shutter_h = 0.60, shutter_right = 9.00, shutter_left = 9.00, shutter_top = 0.80, shutter_bottom = 0.40, with_segment = true, with_shutter = false) {
     
     linear_extrude(h + (with_shutter ? shutter_h : 0))
         union() {
@@ -56,33 +56,47 @@ module window(size = [17.00, 23.60], h = 1.60, inner_t = 0.8, outer_t = 0.8, shu
     }
 }
 
-//ok: window([18.20, 24.60]);
-//ok: window([20.00, 25.00], with_shutter = false);
+translate([30, 30, 0])
+    window([18.20, 24.60]);
 
-//ok: window([9.20, 24.60], h = 2.20, shutter_left = 0, with_segment = false);
-//ok: window([16.00, 17.00], h = 2.20, shutter_right = 8.00, shutter_left = 8.00, with_segment = false);
+translate([76, 30, 0])
+    window([20.00, 25.00], with_shutter = false);
 
-//ok: window([18.20, 24.60], h = 2.20, shutter_right = 18.30, shutter_left = 0, with_segment = false);
+translate([70, 60, 0])
+    window([9.20, 24.60], h = 2.20, shutter_left = 0, with_segment = false);
 
-//ok: window([20.00, 25.00], shutter_right = 0, shutter_left = 0, shutter_top = 0, shutter_bottom = 0, with_shutter = false);
+translate([30, 60, 0])
+    window([16.00, 17.00], h = 2.20, shutter_right = 8.00, shutter_left = 8.00, with_segment = false);
 
-//ok: window([8.00, 15.00], h = 2.20, shutter_right = 7.50, shutter_left = 0, with_segment = false);
+translate([-30, -60, 0])
+    window([18.20, 24.60], h = 2.20, shutter_right = 18.30, shutter_left = 0, with_segment = false);
 
+translate([-30, -30, 0])
+    window([20.00, 25.00], shutter_right = 0, shutter_left = 0, shutter_top = 0, shutter_bottom = 0, with_shutter = false);
 
-//ok: window([9.00, 25.00], h = 2.40, shutter_right = 0, shutter_left = 9, with_segment = false);
+translate([-20, 30, 0])
+    window([20.00, 25.00], shutter_right = 0, shutter_left = 0, shutter_top = 0, shutter_bottom = 0, with_shutter = false);
 
-//ok: window([6.70, 14.80], h = 2.40, shutter_right = 0, shutter_left = 6, with_segment = false, shutter_top = 0);
+translate([-60, -30, 0])
+    window([8.00, 15.00], h = 2.20, shutter_right = 7.50, shutter_left = 0, with_segment = false);
 
-//ok: window([6.60, 13.40], h = 2.40, shutter_right = 0, shutter_left = 7, with_segment = false, shutter_top = 0);
+translate([-80, -60, 0])
+    window([9.00, 25.00], h = 2.40, shutter_right = 0, shutter_left = 9, with_segment = false);
 
-//ok: window([7.80, 17.20], h = 2.40, shutter_right = 0, shutter_left = 7, with_segment = false);
+translate([-10, -50, 0])
+    window([6.70, 14.80], h = 2.40, shutter_right = 0, shutter_left = 6, with_segment = false, shutter_top = 0);
+
+translate([-10, -30, 0])
+    window([6.60, 13.40], h = 2.40, shutter_right = 0, shutter_left = 7, with_segment = false, shutter_top = 0);
+
+window([7.80, 17.20], h = 2.40, shutter_right = 0, shutter_left = 7, with_segment = false);
 
 //linear_extrude(0.8)
 //    square([66, 29]);
 
-
-linear_extrude(29.20)
-    square([3, 3]);
+// filar
+//linear_extrude(29.20)
+//    square([3, 3]);
 
 /*
 translate([18.00, 0, 0])
